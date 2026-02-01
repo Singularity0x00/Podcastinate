@@ -1,3 +1,4 @@
+
 #!/bin/bash
 echo -e "Play \033[1m The Darknet Diaries \033[0m from the Terminal" 
 
@@ -16,7 +17,7 @@ do
 		v)
 			echo "v1.0" && exit;;
 		r)
-			curl -s https://feeds.megaphone.fm/darknetdiaries | grep -E '(<description>|<title>|<enclosure url=)' > $HOME/.local/share/dndiaries/dnd_data.txt && echo "Updated data!!" 
+			curl -s https://darknetdiaries.com/feedfree.xml | grep -E '(<description>|<title>|<enclosure url=)' > $HOME/.local/share/dndiaries/dnd_data.txt && echo "Updated data!!" 
 			exit ;;
 		h)
 			usage ;;
@@ -42,9 +43,10 @@ if [[ ! -d $HOME/.local/share/dndiaries/ ]] ; then
 fi
 
 if [[ ! -f $HOME/.local/share/dndiaries/dnd_data.txt ]] ; then 
-	curl -s https://feeds.megaphone.fm/darknetdiaries | grep -E '(<description>|<title>|<enclosure url=)' > $HOME/.local/share/dndiaries/dnd_data.txt && echo "Updated data!!" 
+	curl -s https://darknetdiaries.com/feedfree.xml | grep -E '(<description>|<title>|<enclosure url=)' > $HOME/.local/share/dndiaries/dnd_data.txt && echo "Updated data!!" 
 fi
 epname=$(cat $HOME/.local/share/dndiaries/dnd_data.txt | grep -P "(?=<title>*)" | sed -e 's/<[^>]*>//g' -e 's/^[[:blank:]]*//' -e '/^Darknet/d' | fzf) 
 echo -e "playing Episode: \033[1m $epname \033[0m"
 grep -A1 "$epname" $HOME/.local/share/dndiaries/dnd_data.txt | grep -E '<description>'| sed -e 's/<[^>]*>//g' && notify-send "Playing Episode $epname"
-mpv --no-video --really-quiet `grep -A2 "$epname" $HOME/.local/share/dndiaries/dnd_data.txt | grep -Po "(?<=enclosure url=\")[^\?][^\"]*"`
+mpv `grep -A2 "$epname" $HOME/.local/share/dndiaries/dnd_data.txt | grep -Po "(?<=enclosure url=\")[^\?][^\"]*"`
+#mpv --no-video --really-quiet `grep -A2 "$epname" $HOME/.local/share/dndiaries/dnd_data.txt | grep -Po "(?<=enclosure url=\")[^\?][^\"]*"`
